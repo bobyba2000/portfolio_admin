@@ -37,9 +37,7 @@ class _AboutPageState extends State<AboutPage> {
   final TextEditingController _youtubeController = TextEditingController();
   final TextEditingController _tiktokController = TextEditingController();
 
-  final TextEditingController _salesController = TextEditingController();
-  final TextEditingController _marketingController = TextEditingController();
-  final TextEditingController _trainingController = TextEditingController();
+  final TextEditingController _youtubeLinkController = TextEditingController();
 
   final form = GlobalKey<FormState>();
   List skillInfo = [];
@@ -155,6 +153,13 @@ class _AboutPageState extends State<AboutPage> {
                                     TextFieldWidget(
                                       controller: _locationController,
                                       label: 'Location',
+                                      maxLines: 1,
+                                      validator: BaseValidator.requiredValidate,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    TextFieldWidget(
+                                      controller: _youtubeLinkController,
+                                      label: 'Youtube Video',
                                       maxLines: 1,
                                       validator: BaseValidator.requiredValidate,
                                     ),
@@ -325,6 +330,7 @@ class _AboutPageState extends State<AboutPage> {
     _tiktokController.text = userInfo['tiktok'];
     _youtubeController.text = userInfo['youtube'];
     _locationController.text = userInfo['location'] ?? '';
+    _youtubeLinkController.text = userInfo['youtube_video'] ?? '';
     photoUrl = userInfo['avatar'];
 
     skillInfo = (await FirebaseFirestore.instance.collection('user_info').get()).docs.first.get('skills');
@@ -374,6 +380,7 @@ class _AboutPageState extends State<AboutPage> {
             'tiktok': _tiktokController.text,
             'youtube': _youtubeController.text,
             'location': _locationController.text,
+            'youtube_video': _youtubeLinkController.text,
           },
         },
       );
