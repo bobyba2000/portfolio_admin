@@ -311,7 +311,7 @@ class _AboutPageState extends State<AboutPage> {
   }
 
   Future<void> getData() async {
-    EasyLoading.show();
+    EasyLoading.show(dismissOnTap: false);
     Map<String, dynamic> userInfo = (await FirebaseFirestore.instance.collection('user_info').get()).docs.first.get('about');
 
     _nameController.text = userInfo['name'];
@@ -353,7 +353,7 @@ class _AboutPageState extends State<AboutPage> {
   }
 
   Future<void> updateData() async {
-    EasyLoading.show();
+    EasyLoading.show(dismissOnTap: false);
     try {
       CollectionReference userInfo = FirebaseFirestore.instance.collection('user_info');
       if (photoBytes != null) {

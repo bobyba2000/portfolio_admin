@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:portfolio/common_widgets/custom_grid_widget.dart';
 import 'package:portfolio/common_widgets/text_field_widget.dart';
+import 'package:portfolio/page/blog/page/blog_detail_page.dart';
+import 'package:portfolio/page/blog/widget/blog_item_widget.dart';
 
 import '../../helper/toast_utils.dart';
 
@@ -73,18 +75,87 @@ class _BlogPageState extends State<BlogPage> {
                       ],
                     ),
                   ),
-                  CustomGridWidget(children: []),
+                  const SizedBox(height: 16),
+                  CustomGridWidget(
+                    children: listBlogs
+                        .asMap()
+                        .entries
+                        .map(
+                          (e) => InkWell(
+                            onTap: () async {
+                              await showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  content: BlogDetailPage(
+                                    listBlog: listBlogs,
+                                    blog: BlogItemModel(
+                                      e.value['datePost'],
+                                      e.value['image'],
+                                      e.value['title'],
+                                      e.value['link'],
+                                    ),
+                                    index: e.key,
+                                  ),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(20),
+                                    ),
+                                  ),
+                                ),
+                              );
+                              getData();
+                            },
+                            child: BlogItemWidget(
+                              blog: BlogItemModel(
+                                e.value['datePost'],
+                                e.value['image'],
+                                e.value['title'],
+                                e.value['link'],
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
                 ],
               ),
             ),
           ),
         ],
       ),
+      floatingActionButton: InkWell(
+        child: Container(
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.black,
+          ),
+          padding: const EdgeInsets.all(8),
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+            size: 24,
+          ),
+        ),
+        onTap: () async {
+          await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              content: BlogDetailPage(listBlog: listBlogs),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(20),
+                ),
+              ),
+            ),
+          );
+          getData();
+        },
+      ),
     );
   }
 
   Future<void> getData() async {
-    EasyLoading.show();
+    EasyLoading.show(dismissOnTap: false);
     try {
       Map<String, dynamic> content = (await FirebaseFirestore.instance.collection('user_info').get()).docs.first.get('content');
       listBlogs = content['posts'];
