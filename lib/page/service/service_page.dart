@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:portfolio/helper/toast_utils.dart';
 
@@ -121,7 +119,7 @@ class _ServicePageState extends State<ServicePage> {
       _generalController.text = userInfo['introduce'];
       setState(() {});
     } catch (e) {
-      ToastUtils.showToast(msg: e.toString(), isError: true);
+      // ToastUtils.showToast(msg: e.toString(), isError: true);
     }
     EasyLoading.dismiss();
   }

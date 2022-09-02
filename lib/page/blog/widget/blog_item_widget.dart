@@ -49,13 +49,32 @@ class BlogItemWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  blog.title,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        blog.title,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: blog.isActive ? Colors.green : Colors.red,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      child: Text(
+                        blog.isActive ? 'Active' : 'Inactive',
+                        style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black, fontSize: 12),
+                      ),
+                    )
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -97,14 +116,18 @@ class BlogItemModel {
   String imageLink;
   String title;
   String link;
-  BlogItemModel(this.datePost, this.imageLink, this.title, this.link);
+  bool isActive;
+  String? content;
+  BlogItemModel(this.datePost, this.imageLink, this.title, this.link, this.content, this.isActive);
 
-  Map<String, String> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'datePost': datePost,
       'image': imageLink,
       'title': title,
       'link': link,
+      'content': content ?? '',
+      'isActive': isActive,
     };
   }
 }

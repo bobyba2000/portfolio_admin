@@ -161,7 +161,7 @@ class _ArchivementPageState extends State<ArchivementPage> {
       _linkController.text = content['link'];
       setState(() {});
     } catch (e) {
-      ToastUtils.showToast(msg: e.toString(), isError: true);
+      // ToastUtils.showToast(msg: e.toString(), isError: true);
     }
     EasyLoading.dismiss();
   }

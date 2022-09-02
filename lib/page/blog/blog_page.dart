@@ -93,6 +93,8 @@ class _BlogPageState extends State<BlogPage> {
                                       e.value['image'],
                                       e.value['title'],
                                       e.value['link'],
+                                      e.value['content'] ?? '',
+                                      e.value['isActive'] ?? true,
                                     ),
                                     index: e.key,
                                   ),
@@ -111,6 +113,8 @@ class _BlogPageState extends State<BlogPage> {
                                 e.value['image'],
                                 e.value['title'],
                                 e.value['link'],
+                                e.value['content'] ?? '',
+                                e.value['isActive'] ?? true,
                               ),
                             ),
                           ),
@@ -163,7 +167,7 @@ class _BlogPageState extends State<BlogPage> {
       _linkController.text = content['link'];
       setState(() {});
     } catch (e) {
-      ToastUtils.showToast(msg: e.toString(), isError: true);
+      // ToastUtils.showToast(msg: e.toString(), isError: true);
     }
     EasyLoading.dismiss();
   }

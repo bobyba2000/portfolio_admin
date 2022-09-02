@@ -31,6 +31,7 @@ class BlogDetailPage extends StatefulWidget {
 class _BlogDetailPageState extends State<BlogDetailPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
   late BlogItemModel blog;
   Uint8List bytes = Uint8List(0);
   final form = GlobalKey<FormState>();
@@ -42,10 +43,13 @@ class _BlogDetailPageState extends State<BlogDetailPage> {
           DateFormat('MMMM dd, yyyy').format(DateTime.now()),
           '',
           '',
+          'blog-details.html?id=${widget.listBlog.length}',
           '',
+          true,
         );
     _titleController.text = blog.title;
     _linkController.text = blog.link;
+    _contentController.text = blog.content ?? '';
     super.initState();
   }
 
@@ -97,8 +101,15 @@ class _BlogDetailPageState extends State<BlogDetailPage> {
                       ),
                       const SizedBox(height: 16),
                       TextFieldWidget(
+                        controller: _contentController,
+                        label: 'Content Link',
+                        validator: BaseValidator.requiredValidate,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFieldWidget(
                         controller: _linkController,
                         label: 'Link',
+                        readOnly: true,
                         validator: BaseValidator.requiredValidate,
                       ),
                     ],
@@ -113,12 +124,12 @@ class _BlogDetailPageState extends State<BlogDetailPage> {
               Visibility(
                 visible: widget.blog != null,
                 child: BaseButton(
-                  text: 'Delete',
+                  text: blog.isActive ? 'Deactivate' : 'Activate',
                   onClick: () {
-                    widget.listBlog.removeAt(widget.index!);
+                    setBlogState();
                     uploadToFirestore();
                   },
-                  backgroundColor: Colors.red,
+                  backgroundColor: blog.isActive ? Colors.red : Colors.green,
                 ),
               ),
               const Spacer(),
@@ -141,6 +152,7 @@ class _BlogDetailPageState extends State<BlogDetailPage> {
                     }
                     blog.link = _linkController.text;
                     blog.title = _titleController.text;
+                    blog.content = _contentController.text;
                     if (widget.blog == null) {
                       createBlog();
                     } else {
@@ -160,6 +172,11 @@ class _BlogDetailPageState extends State<BlogDetailPage> {
     );
   }
 
+  void setBlogState() {
+    blog.isActive = !blog.isActive;
+    widget.listBlog[widget.index!] = blog.toJson();
+  }
+
   void createBlog() {
     widget.listBlog.add(blog.toJson());
   }
@@ -170,11 +187,13 @@ class _BlogDetailPageState extends State<BlogDetailPage> {
 
   Future<void> uploadToFirestore() async {
     try {
+      EasyLoading.show(dismissOnTap: false);
       CollectionReference userInfo = FirebaseFirestore.instance.collection('user_info');
       await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'content.posts': widget.listBlog});
       EasyLoading.dismiss();
-      Navigator.pop(context);
       ToastUtils.showToast(msg: 'Successfully');
+      Navigator.pop(context);
+      return;
     } catch (e) {
       EasyLoading.dismiss();
       ToastUtils.showToast(msg: 'Error. Please try again.', isError: true);
