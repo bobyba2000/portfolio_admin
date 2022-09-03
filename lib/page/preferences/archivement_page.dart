@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:portfolio/common_widgets/custom_grid_widget.dart';
 import 'package:portfolio/common_widgets/text_field_widget.dart';
 
+import '../../common_widgets/base_button.dart';
 import '../../helper/toast_utils.dart';
 import 'page/archivement_detail_page.dart';
 import 'widget/archivement_item_widget.dart';
@@ -20,6 +21,7 @@ class _ArchivementPageState extends State<ArchivementPage> {
   List<Widget> children = [];
   final TextEditingController _generalController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
+  final form = GlobalKey<FormState>();
   @override
   void initState() {
     getData();
@@ -33,89 +35,107 @@ class _ArchivementPageState extends State<ArchivementPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'ARCHIVEMENTS',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+          Row(
+            children: [
+              const Text(
+                'ARCHIVEMENTS',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const Spacer(),
+              BaseButton(
+                text: 'SAVE',
+                onClick: () {
+                  if (form.currentState!.validate()) {
+                    updateData();
+                  }
+                },
+                textStyle: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                backgroundColor: Colors.black,
+              ),
+            ],
           ),
           const SizedBox(height: 36),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.white,
+          Form(
+            key: form,
+            child: Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.white,
+                      ),
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'INTRODUCTION',
+                            style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          TextFieldWidget(
+                            controller: _generalController,
+                            label: 'General Detail',
+                            maxLines: 2,
+                          ),
+                          const SizedBox(height: 16),
+                          TextFieldWidget(
+                            controller: _linkController,
+                            label: 'Link',
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
                     ),
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'INTRODUCTION',
-                          style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        TextFieldWidget(
-                          controller: _generalController,
-                          label: 'General Detail',
-                          maxLines: 2,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFieldWidget(
-                          controller: _linkController,
-                          label: 'Link',
-                          maxLines: 1,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomGridWidget(
-                    children: listArchivements
-                        .asMap()
-                        .entries
-                        .map(
-                          (e) => InkWell(
-                            onTap: () async {
-                              await showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  content: ArchivementDetailPage(
-                                    listArchivement: listArchivements,
-                                    archivement: ArchivementItemModel(
-                                      e.value['image'],
-                                      e.value['title'],
-                                      e.value['link'],
+                    const SizedBox(height: 16),
+                    CustomGridWidget(
+                      children: listArchivements
+                          .asMap()
+                          .entries
+                          .map(
+                            (e) => InkWell(
+                              onTap: () async {
+                                await showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    content: ArchivementDetailPage(
+                                      listArchivement: listArchivements,
+                                      archivement: ArchivementItemModel(
+                                        e.value['image'],
+                                        e.value['title'],
+                                        e.value['link'],
+                                      ),
+                                      index: e.key,
                                     ),
-                                    index: e.key,
-                                  ),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(20),
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(20),
+                                      ),
                                     ),
                                   ),
+                                );
+                                getData();
+                              },
+                              child: ArchivementItemWidget(
+                                archivement: ArchivementItemModel(
+                                  e.value['image'],
+                                  e.value['title'],
+                                  e.value['link'],
                                 ),
-                              );
-                              getData();
-                            },
-                            child: ArchivementItemWidget(
-                              archivement: ArchivementItemModel(
-                                e.value['image'],
-                                e.value['title'],
-                                e.value['link'],
                               ),
                             ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ],
+                          )
+                          .toList(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -164,5 +184,19 @@ class _ArchivementPageState extends State<ArchivementPage> {
       // ToastUtils.showToast(msg: e.toString(), isError: true);
     }
     EasyLoading.dismiss();
+  }
+
+  Future<void> updateData() async {
+    EasyLoading.show(dismissOnTap: false);
+    try {
+      CollectionReference userInfo = FirebaseFirestore.instance.collection('user_info');
+      await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'recent_work.introduce': _generalController.text});
+      await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'recent_work.link': _linkController.text});
+      ToastUtils.showToast(msg: 'Update successfully.');
+      EasyLoading.dismiss();
+    } catch (e) {
+      ToastUtils.showToast(msg: 'Update failed.', isError: true);
+      EasyLoading.dismiss();
+    }
   }
 }
