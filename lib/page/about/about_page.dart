@@ -31,6 +31,7 @@ class _AboutPageState extends State<AboutPage> {
 
   final TextEditingController _shortIntroduction = TextEditingController();
   final TextEditingController _detailController = TextEditingController();
+  final TextEditingController _footerController = TextEditingController();
 
   final TextEditingController _facebookController = TextEditingController();
   final TextEditingController _instagramController = TextEditingController();
@@ -175,6 +176,13 @@ class _AboutPageState extends State<AboutPage> {
                                       controller: _detailController,
                                       label: 'Detail Introduce',
                                       maxLines: 3,
+                                      validator: BaseValidator.requiredValidate,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    TextFieldWidget(
+                                      controller: _footerController,
+                                      label: 'Footer',
+                                      maxLines: 5,
                                       validator: BaseValidator.requiredValidate,
                                     ),
                                   ],
@@ -331,6 +339,7 @@ class _AboutPageState extends State<AboutPage> {
     _youtubeController.text = userInfo['youtube'];
     _locationController.text = userInfo['location'] ?? '';
     _youtubeLinkController.text = userInfo['youtube_video'] ?? '';
+    _footerController.text = userInfo['footer'] ?? '';
     photoUrl = userInfo['avatar'];
 
     skillInfo = (await FirebaseFirestore.instance.collection('user_info').get()).docs.first.get('skills');
@@ -381,6 +390,7 @@ class _AboutPageState extends State<AboutPage> {
             'youtube': _youtubeController.text,
             'location': _locationController.text,
             'youtube_video': _youtubeLinkController.text,
+            'footer': _footerController.text,
           },
         },
       );

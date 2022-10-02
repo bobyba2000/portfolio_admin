@@ -1,23 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:portfolio/common_widgets/base_button.dart';
 import 'package:portfolio/common_widgets/custom_grid_widget.dart';
 import 'package:portfolio/common_widgets/text_field_widget.dart';
+import 'package:portfolio/page/learning/page/learning_detail_page.dart';
+import 'package:portfolio/page/learning/widget/learning_item_widget.dart';
 
-import '../../common_widgets/base_button.dart';
 import '../../helper/toast_utils.dart';
-import 'page/archivement_detail_page.dart';
-import 'widget/archivement_item_widget.dart';
 
-class ArchivementPage extends StatefulWidget {
-  const ArchivementPage({Key? key}) : super(key: key);
+class LearningPage extends StatefulWidget {
+  const LearningPage({Key? key}) : super(key: key);
 
   @override
-  State<ArchivementPage> createState() => _ArchivementPageState();
+  State<LearningPage> createState() => _LearningPageState();
 }
 
-class _ArchivementPageState extends State<ArchivementPage> {
-  List<dynamic> listArchivements = [];
+class _LearningPageState extends State<LearningPage> {
+  List<dynamic> listLearnings = [];
   List<Widget> children = [];
   final TextEditingController _generalController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
@@ -38,7 +38,7 @@ class _ArchivementPageState extends State<ArchivementPage> {
           Row(
             children: [
               const Text(
-                'ARCHIVEMENTS',
+                'LEARNINGS',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -96,7 +96,7 @@ class _ArchivementPageState extends State<ArchivementPage> {
                     ),
                     const SizedBox(height: 16),
                     CustomGridWidget(
-                      children: listArchivements
+                      children: listLearnings
                           .asMap()
                           .entries
                           .map(
@@ -105,9 +105,9 @@ class _ArchivementPageState extends State<ArchivementPage> {
                                 await showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    content: ArchivementDetailPage(
-                                      listArchivement: listArchivements,
-                                      archivement: ArchivementItemModel(
+                                    content: LearningDetailPage(
+                                      listLearning: listLearnings,
+                                      learning: LearningItemModel(
                                         e.value['image'],
                                         e.value['title'],
                                         e.value['link'],
@@ -125,8 +125,8 @@ class _ArchivementPageState extends State<ArchivementPage> {
                                 );
                                 getData();
                               },
-                              child: ArchivementItemWidget(
-                                archivement: ArchivementItemModel(
+                              child: LearningItemWidget(
+                                learning: LearningItemModel(
                                   e.value['image'],
                                   e.value['title'],
                                   e.value['link'],
@@ -162,7 +162,7 @@ class _ArchivementPageState extends State<ArchivementPage> {
           await showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              content: ArchivementDetailPage(listArchivement: listArchivements),
+              content: LearningDetailPage(listLearning: listLearnings),
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
                   Radius.circular(20),
@@ -179,8 +179,8 @@ class _ArchivementPageState extends State<ArchivementPage> {
   Future<void> getData() async {
     EasyLoading.show(dismissOnTap: false);
     try {
-      Map<String, dynamic> content = (await FirebaseFirestore.instance.collection('user_info').get()).docs.first.get('recent_work');
-      listArchivements = content['posts'];
+      Map<String, dynamic> content = (await FirebaseFirestore.instance.collection('user_info').get()).docs.first.get('learning');
+      listLearnings = content['posts'];
       _generalController.text = content['introduce'];
       _linkController.text = content['link'];
       setState(() {});
@@ -194,8 +194,8 @@ class _ArchivementPageState extends State<ArchivementPage> {
     EasyLoading.show(dismissOnTap: false);
     try {
       CollectionReference userInfo = FirebaseFirestore.instance.collection('user_info');
-      await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'recent_work.introduce': _generalController.text});
-      await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'recent_work.link': _linkController.text});
+      await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'learning.introduce': _generalController.text});
+      await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'learning.link': _linkController.text});
       ToastUtils.showToast(msg: 'Update successfully.');
       EasyLoading.dismiss();
     } catch (e) {

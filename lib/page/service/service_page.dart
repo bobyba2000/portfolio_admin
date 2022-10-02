@@ -1,7 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:portfolio/helper/storage_service.dart';
 import 'package:portfolio/helper/toast_utils.dart';
+import 'package:portfolio/page/service/service_item.dart';
 
 import '../../common_widgets/base_button.dart';
 import '../../common_widgets/text_field_widget.dart';
@@ -24,6 +28,7 @@ class _ServicePageState extends State<ServicePage> {
   List<TextEditingController> listDetail = [];
   final TextEditingController _generalController = TextEditingController();
   List<dynamic> listServices = [];
+  List<Uint8List> listImages = <Uint8List>[];
   List<Widget> children = [];
   @override
   Widget build(BuildContext context) {
@@ -106,13 +111,17 @@ class _ServicePageState extends State<ServicePage> {
             (e) => TextEditingController(text: e['info']),
           )
           .toList();
+      listImages = listServices.map((e) => Uint8List(0)).toList();
       children = listServices
           .asMap()
           .entries
           .map(
-            (e) => Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: TextFieldWidget(controller: listDetail[e.key], label: e.value['title'] + ' Detail'),
+            (e) => ServiceItemWidget(
+              value: e.value,
+              controller: listDetail[e.key],
+              onChangeImage: (bytes) {
+                listImages[e.key] = bytes;
+              },
             ),
           )
           .toList();
@@ -128,6 +137,13 @@ class _ServicePageState extends State<ServicePage> {
     EasyLoading.show();
     try {
       CollectionReference userInfo = FirebaseFirestore.instance.collection('user_info');
+
+      for (var i = 0; i < listServices.length; i++) {
+        if (listImages[i].isNotEmpty) {
+          listServices[i]['image'] = await Storage.uploadFile(listImages[i], 'services') ?? listServices[i]['image'];
+        }
+      }
+
       await userInfo.doc('KFcwyediaY33ojA7FdCt').update({
         'service': {
           'introduce': _generalController.text,
@@ -136,6 +152,7 @@ class _ServicePageState extends State<ServicePage> {
                   'info': listDetail[e.key].text,
                   'icon': e.value['icon'],
                   'title': e.value['title'],
+                  'image': e.value['image'] ?? '',
                 },
               )
         }

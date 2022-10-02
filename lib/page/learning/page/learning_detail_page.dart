@@ -9,48 +9,46 @@ import 'package:portfolio/common_widgets/network_image_widget.dart';
 import 'package:portfolio/common_widgets/text_field_widget.dart';
 import 'package:portfolio/helper/storage_service.dart';
 import 'package:portfolio/helper/toast_utils.dart';
-import 'package:intl/intl.dart';
 import 'package:portfolio/validator/base_validator.dart';
 
-import '../widget/archivement_item_widget.dart';
+import '../widget/learning_item_widget.dart';
 
-class ArchivementDetailPage extends StatefulWidget {
-  final ArchivementItemModel? archivement;
-  final List<dynamic> listArchivement;
+class LearningDetailPage extends StatefulWidget {
+  final LearningItemModel? learning;
+  final List<dynamic> listLearning;
   final int? index;
-  const ArchivementDetailPage({
+  const LearningDetailPage({
     Key? key,
-    this.archivement,
-    required this.listArchivement,
+    this.learning,
+    required this.listLearning,
     this.index,
   }) : super(key: key);
 
   @override
-  State<ArchivementDetailPage> createState() => _ArchivementDetailPageState();
+  State<LearningDetailPage> createState() => _LearningDetailPageState();
 }
 
-class _ArchivementDetailPageState extends State<ArchivementDetailPage> {
+class _LearningDetailPageState extends State<LearningDetailPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  late ArchivementItemModel archivement;
+  late LearningItemModel learning;
   Uint8List bytes = Uint8List(0);
   final form = GlobalKey<FormState>();
 
   @override
   void initState() {
-    archivement = widget.archivement ??
-        ArchivementItemModel(
+    learning = widget.learning ??
+        LearningItemModel(
           '',
           '',
-          'achivement-details.html?id=${widget.listArchivement.length}',
+          '',
           '',
           true,
         );
-    _titleController.text = archivement.title;
-
-    _linkController.text = archivement.link;
-    _contentController.text = archivement.content;
+    _titleController.text = learning.title;
+    _linkController.text = learning.link;
+    _contentController.text = learning.content ?? '';
     super.initState();
   }
 
@@ -64,7 +62,7 @@ class _ArchivementDetailPageState extends State<ArchivementDetailPage> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              widget.archivement == null ? 'New Archivement' : 'Update Archivement',
+              widget.learning == null ? 'New Learning' : 'Update Learning',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
@@ -85,7 +83,7 @@ class _ArchivementDetailPageState extends State<ArchivementDetailPage> {
                     }
                   },
                   child: NetworkImageWidget(
-                    url: archivement.imageLink,
+                    url: learning.imageLink,
                     bytes: bytes,
                     width: 120,
                   ),
@@ -110,7 +108,6 @@ class _ArchivementDetailPageState extends State<ArchivementDetailPage> {
                       TextFieldWidget(
                         controller: _linkController,
                         label: 'Link',
-                        readOnly: true,
                         validator: BaseValidator.requiredValidate,
                       ),
                     ],
@@ -123,18 +120,16 @@ class _ArchivementDetailPageState extends State<ArchivementDetailPage> {
           Row(
             children: [
               Visibility(
-                visible: widget.archivement != null,
+                visible: widget.learning != null,
                 child: BaseButton(
-                  text: archivement.isActive ? 'Deactivate' : 'Activate',
+                  text: learning.isActive ? 'Deactivate' : 'Activate',
                   onClick: () {
-                    archivement.isActive = !archivement.isActive;
-                    updateArchivement();
+                    setLearningState();
                     uploadToFirestore();
                   },
-                  backgroundColor: archivement.isActive ? Colors.red : Colors.green,
+                  backgroundColor: learning.isActive ? Colors.red : Colors.green,
                 ),
               ),
-              const Spacer(),
               const Spacer(),
               BaseButton(
                 text: 'Cancel',
@@ -151,15 +146,15 @@ class _ArchivementDetailPageState extends State<ArchivementDetailPage> {
                   if (form.currentState!.validate()) {
                     EasyLoading.show(dismissOnTap: false);
                     if (bytes.isNotEmpty) {
-                      archivement.imageLink = await Storage.uploadFile(bytes, 'archivements') ?? '';
+                      learning.imageLink = await Storage.uploadFile(bytes, 'learnings') ?? '';
                     }
-                    archivement.link = _linkController.text;
-                    archivement.content = _contentController.text;
-                    archivement.title = _titleController.text;
-                    if (widget.archivement == null) {
-                      createArchivement();
+                    learning.link = _linkController.text;
+                    learning.title = _titleController.text;
+                    learning.content = _contentController.text;
+                    if (widget.learning == null) {
+                      createLearning();
                     } else {
-                      updateArchivement();
+                      updateLearning();
                     }
                     uploadToFirestore();
                   }
@@ -175,21 +170,28 @@ class _ArchivementDetailPageState extends State<ArchivementDetailPage> {
     );
   }
 
-  void createArchivement() {
-    widget.listArchivement.add(archivement.toJson());
+  void setLearningState() {
+    learning.isActive = !learning.isActive;
+    widget.listLearning[widget.index!] = learning.toJson();
   }
 
-  void updateArchivement() {
-    widget.listArchivement[widget.index!] = archivement.toJson();
+  void createLearning() {
+    widget.listLearning.add(learning.toJson());
+  }
+
+  void updateLearning() {
+    widget.listLearning[widget.index!] = learning.toJson();
   }
 
   Future<void> uploadToFirestore() async {
     try {
+      EasyLoading.show(dismissOnTap: false);
       CollectionReference userInfo = FirebaseFirestore.instance.collection('user_info');
-      await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'recent_work.posts': widget.listArchivement});
+      await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'learning.posts': widget.listLearning});
       EasyLoading.dismiss();
-      Navigator.pop(context);
       ToastUtils.showToast(msg: 'Successfully');
+      Navigator.pop(context);
+      return;
     } catch (e) {
       EasyLoading.dismiss();
       ToastUtils.showToast(msg: 'Error. Please try again.', isError: true);

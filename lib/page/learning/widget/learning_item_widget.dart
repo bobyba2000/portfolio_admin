@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class ArchivementItemWidget extends StatelessWidget {
-  final ArchivementItemModel archivement;
-  const ArchivementItemWidget({Key? key, required this.archivement}) : super(key: key);
+class LearningItemWidget extends StatelessWidget {
+  final LearningItemModel learning;
+  const LearningItemWidget({Key? key, required this.learning}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class ArchivementItemWidget extends StatelessWidget {
                 topRight: Radius.circular(8),
               ),
               image: DecorationImage(
-                image: NetworkImage(archivement.imageLink),
+                image: NetworkImage(learning.imageLink),
                 fit: BoxFit.cover,
               ),
             ),
@@ -53,7 +53,7 @@ class ArchivementItemWidget extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        archivement.title,
+                        learning.title,
                         style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -65,27 +65,34 @@ class ArchivementItemWidget extends StatelessWidget {
                     const SizedBox(width: 8),
                     Container(
                       decoration: BoxDecoration(
-                        color: archivement.isActive ? Colors.green : Colors.red,
+                        color: learning.isActive ? Colors.green : Colors.red,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                       child: Text(
-                        archivement.isActive ? 'Active' : 'Inactive',
+                        learning.isActive ? 'Active' : 'Inactive',
                         style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black, fontSize: 12),
                       ),
                     )
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  archivement.link,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.black,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        learning.link,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.black,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                 )
               ],
             ),
@@ -96,21 +103,20 @@ class ArchivementItemWidget extends StatelessWidget {
   }
 }
 
-class ArchivementItemModel {
+class LearningItemModel {
   String imageLink;
   String title;
   String link;
-  String content;
-
   bool isActive;
-  ArchivementItemModel(this.imageLink, this.title, this.link, this.content, this.isActive);
+  String? content;
+  LearningItemModel(this.imageLink, this.title, this.link, this.content, this.isActive);
 
   Map<String, dynamic> toJson() {
     return {
       'image': imageLink,
       'title': title,
       'link': link,
-      'content': content,
+      'content': content ?? '',
       'isActive': isActive,
     };
   }

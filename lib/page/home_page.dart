@@ -2,6 +2,7 @@ import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:portfolio/page/about/about_page.dart';
 import 'package:portfolio/page/blog/blog_page.dart';
+import 'package:portfolio/page/learning/learning_page.dart';
 import 'package:portfolio/page/preferences/archivement_page.dart';
 import 'package:portfolio/page/service/service_page.dart';
 
@@ -136,6 +137,14 @@ class _HomePageState extends State<HomePage> {
                 },
                 icon: const Icon(Icons.bookmark_outline),
               ),
+              SideMenuItem(
+                priority: 4,
+                title: 'Learnings',
+                onTap: () {
+                  page.jumpToPage(4);
+                },
+                icon: const Icon(Icons.school_outlined),
+              ),
             ],
           ),
           Expanded(
@@ -174,6 +183,13 @@ class _HomePageState extends State<HomePage> {
                           child: const Padding(
                             padding: EdgeInsets.all(24),
                             child: ArchivementPage(),
+                          ),
+                        ),
+                        Container(
+                          color: Colors.grey.withOpacity(0.3),
+                          child: const Padding(
+                            padding: EdgeInsets.all(24),
+                            child: LearningPage(),
                           ),
                         ),
                       ],
