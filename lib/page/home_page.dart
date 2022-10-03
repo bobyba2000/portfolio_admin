@@ -155,6 +155,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Expanded(
                     child: PageView(
+                      physics: const NeverScrollableScrollPhysics(),
                       controller: page,
                       children: [
                         Container(

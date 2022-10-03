@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:portfolio/helper/storage_service.dart';
 import 'package:portfolio/helper/toast_utils.dart';
+import 'package:portfolio/page/service/service_detail_page.dart';
 import 'package:portfolio/page/service/service_item.dart';
 
 import '../../common_widgets/base_button.dart';
@@ -30,8 +31,29 @@ class _ServicePageState extends State<ServicePage> {
   List<dynamic> listServices = [];
   List<Uint8List> listImages = <Uint8List>[];
   List<Widget> children = [];
+  bool isDetail = false;
+  List<String> listHtml = [];
+  int index = -1;
+
   @override
   Widget build(BuildContext context) {
+    if (isDetail) {
+      return ServiceDetailPage(
+        onBack: () {
+          setState(() {
+            isDetail = false;
+          });
+        },
+        id: index,
+        onSave: (value) {
+          listHtml[index] = value;
+          isDetail = false;
+          updateData();
+        },
+        value: listHtml[index],
+        title: listServices[index]['title'],
+      );
+    }
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Column(
@@ -111,6 +133,7 @@ class _ServicePageState extends State<ServicePage> {
             (e) => TextEditingController(text: e['info']),
           )
           .toList();
+      listHtml = listServices.map<String>((e) => e['html']?.toString() ?? '').toList();
       listImages = listServices.map((e) => Uint8List(0)).toList();
       children = listServices
           .asMap()
@@ -121,6 +144,12 @@ class _ServicePageState extends State<ServicePage> {
               controller: listDetail[e.key],
               onChangeImage: (bytes) {
                 listImages[e.key] = bytes;
+              },
+              onClick: () {
+                setState(() {
+                  index = e.key;
+                  isDetail = true;
+                });
               },
             ),
           )
@@ -153,6 +182,7 @@ class _ServicePageState extends State<ServicePage> {
                   'icon': e.value['icon'],
                   'title': e.value['title'],
                   'image': e.value['image'] ?? '',
+                  'html': listHtml[e.key],
                 },
               )
         }
