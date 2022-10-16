@@ -5,6 +5,7 @@ import 'package:portfolio/page/blog/blog_page.dart';
 import 'package:portfolio/page/learning/learning_page.dart';
 import 'package:portfolio/page/preferences/archivement_page.dart';
 import 'package:portfolio/page/service/service_page.dart';
+import 'package:portfolio/page/timeline/timeline_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -145,6 +146,14 @@ class _HomePageState extends State<HomePage> {
                 },
                 icon: const Icon(Icons.school_outlined),
               ),
+              SideMenuItem(
+                priority: 5,
+                title: 'Timelines',
+                onTap: () {
+                  page.jumpToPage(5);
+                },
+                icon: const Icon(Icons.timeline),
+              ),
             ],
           ),
           Expanded(
@@ -191,6 +200,13 @@ class _HomePageState extends State<HomePage> {
                           child: const Padding(
                             padding: EdgeInsets.all(24),
                             child: LearningPage(),
+                          ),
+                        ),
+                        Container(
+                          color: Colors.grey.withOpacity(0.3),
+                          child: const Padding(
+                            padding: EdgeInsets.all(24),
+                            child: TimelinePage(),
                           ),
                         ),
                       ],
