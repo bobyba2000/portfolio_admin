@@ -55,7 +55,7 @@ class TextFieldWidget extends StatelessWidget {
           ),
           maxLines: maxLines ?? 1,
           readOnly: readOnly,
-          maxLength: 500,
+          maxLength: 10000,
           obscureText: isPassword,
           inputFormatters: inputFormatters ?? [],
           validator: validator,

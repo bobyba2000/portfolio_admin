@@ -107,7 +107,7 @@ class _TimelineDetailPageState extends State<TimelineDetailPage> {
                       TextFieldWidget(
                         controller: _contentController,
                         label: 'Content',
-                        maxLines: 3,
+                        maxLines: 6,
                         validator: BaseValidator.requiredValidate,
                       ),
                     ],
