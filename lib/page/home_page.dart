@@ -2,6 +2,8 @@ import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:portfolio/page/about/about_page.dart';
 import 'package:portfolio/page/blog/blog_page.dart';
+import 'package:portfolio/page/event/event_page.dart';
+import 'package:portfolio/page/feedback/feedback_page.dart';
 import 'package:portfolio/page/learning/learning_page.dart';
 import 'package:portfolio/page/preferences/archivement_page.dart';
 import 'package:portfolio/page/service/service_page.dart';
@@ -154,6 +156,22 @@ class _HomePageState extends State<HomePage> {
                 },
                 icon: const Icon(Icons.timeline),
               ),
+              SideMenuItem(
+                priority: 6,
+                title: 'Events',
+                onTap: () {
+                  page.jumpToPage(6);
+                },
+                icon: const Icon(Icons.event),
+              ),
+              SideMenuItem(
+                priority: 7,
+                title: 'Feedbacks',
+                onTap: () {
+                  page.jumpToPage(7);
+                },
+                icon: const Icon(Icons.feedback),
+              ),
             ],
           ),
           Expanded(
@@ -207,6 +225,20 @@ class _HomePageState extends State<HomePage> {
                           child: const Padding(
                             padding: EdgeInsets.all(24),
                             child: TimelinePage(),
+                          ),
+                        ),
+                        Container(
+                          color: Colors.grey.withOpacity(0.3),
+                          child: const Padding(
+                            padding: EdgeInsets.all(24),
+                            child: EventPage(),
+                          ),
+                        ),
+                        Container(
+                          color: Colors.grey.withOpacity(0.3),
+                          child: const Padding(
+                            padding: EdgeInsets.all(24),
+                            child: FeedbackPage(),
                           ),
                         ),
                       ],
