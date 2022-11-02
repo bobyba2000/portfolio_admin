@@ -29,6 +29,7 @@ class FeedbackDetailPage extends StatefulWidget {
 
 class _FeedbackDetailPageState extends State<FeedbackDetailPage> {
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _subTitleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   final TextEditingController _videoLinkController = TextEditingController();
   late FeedbackItemModel feedback;
@@ -38,6 +39,7 @@ class _FeedbackDetailPageState extends State<FeedbackDetailPage> {
   void initState() {
     feedback = widget.feedback ??
         FeedbackItemModel(
+          '',
           '',
           '',
           '',
@@ -74,7 +76,13 @@ class _FeedbackDetailPageState extends State<FeedbackDetailPage> {
                     children: [
                       TextFieldWidget(
                         controller: _titleController,
-                        label: 'Title',
+                        label: 'Writer',
+                        validator: BaseValidator.requiredValidate,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFieldWidget(
+                        controller: _subTitleController,
+                        label: 'Job title',
                         validator: BaseValidator.requiredValidate,
                       ),
                       const SizedBox(height: 16),
@@ -129,6 +137,7 @@ class _FeedbackDetailPageState extends State<FeedbackDetailPage> {
                     feedback.title = _titleController.text;
                     feedback.content = _contentController.text;
                     feedback.videoLink = _videoLinkController.text;
+                    feedback.subTitle = _subTitleController.text;
                     if (widget.feedback == null) {
                       createFeedback();
                     } else {

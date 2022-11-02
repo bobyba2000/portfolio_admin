@@ -109,6 +109,7 @@ class EventItemModel {
   String date;
   String registerLink;
   bool isActive;
+  String subTitle;
   EventItemModel(
     this.imageLink,
     this.title,
@@ -116,6 +117,7 @@ class EventItemModel {
     this.isActive,
     this.date,
     this.registerLink,
+    this.subTitle,
   );
 
   Map<String, dynamic> toJson() {
@@ -126,6 +128,7 @@ class EventItemModel {
       'content': content,
       'isActive': isActive,
       'registerLink': registerLink,
+      'subTitle': subTitle,
     };
   }
 }

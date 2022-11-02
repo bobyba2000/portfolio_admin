@@ -29,6 +29,7 @@ class EventDetailPage extends StatefulWidget {
 
 class _EventDetailPageState extends State<EventDetailPage> {
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _subTitleController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   final TextEditingController _registerLinkController = TextEditingController();
@@ -46,11 +47,13 @@ class _EventDetailPageState extends State<EventDetailPage> {
           true,
           '',
           "",
+          '',
         );
     _titleController.text = event.title;
     _contentController.text = event.content;
     _dateController.text = event.date;
     _registerLinkController.text = event.registerLink;
+    _subTitleController.text = event.subTitle;
     super.initState();
   }
 
@@ -97,7 +100,13 @@ class _EventDetailPageState extends State<EventDetailPage> {
                     children: [
                       TextFieldWidget(
                         controller: _titleController,
-                        label: 'Writer',
+                        label: 'Title',
+                        validator: BaseValidator.requiredValidate,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFieldWidget(
+                        controller: _subTitleController,
+                        label: 'Short Title',
                         validator: BaseValidator.requiredValidate,
                       ),
                       const SizedBox(height: 16),
@@ -162,6 +171,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                     event.title = _titleController.text;
                     event.content = _contentController.text;
                     event.registerLink = _registerLinkController.text;
+                    event.subTitle = _subTitleController.text;
                     if (widget.event == null) {
                       createEvent();
                     } else {

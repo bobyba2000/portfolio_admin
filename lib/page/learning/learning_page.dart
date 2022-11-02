@@ -1,12 +1,17 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:portfolio/common_widgets/base_button.dart';
 import 'package:portfolio/common_widgets/custom_grid_widget.dart';
+import 'package:portfolio/common_widgets/network_image_widget.dart';
 import 'package:portfolio/common_widgets/text_field_widget.dart';
 import 'package:portfolio/page/learning/page/learning_detail_page.dart';
 import 'package:portfolio/page/learning/widget/learning_item_widget.dart';
 
+import '../../helper/storage_service.dart';
 import '../../helper/toast_utils.dart';
 
 class LearningPage extends StatefulWidget {
@@ -22,6 +27,8 @@ class _LearningPageState extends State<LearningPage> {
   final TextEditingController _generalController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
   final form = GlobalKey<FormState>();
+  Uint8List bytes = Uint8List(0);
+  String? url;
   @override
   void initState() {
     getData();
@@ -80,16 +87,45 @@ class _LearningPageState extends State<LearningPage> {
                             'INTRODUCTION',
                             style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
                           ),
-                          TextFieldWidget(
-                            controller: _generalController,
-                            label: 'General Detail',
-                            maxLines: 2,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFieldWidget(
-                            controller: _linkController,
-                            label: 'Link',
-                            maxLines: 1,
+                          Row(
+                            children: [
+                              InkWell(
+                                onTap: () async {
+                                  FilePickerResult? result = await FilePicker.platform.pickFiles(
+                                    type: FileType.custom,
+                                    allowedExtensions: ['png'],
+                                  );
+                                  if (result != null) {
+                                    bytes = result.files.first.bytes ?? Uint8List(0);
+                                    setState(() {});
+                                  }
+                                },
+                                child: NetworkImageWidget(
+                                  url: url,
+                                  bytes: bytes,
+                                  width: 120,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextFieldWidget(
+                                      controller: _generalController,
+                                      label: 'General Detail',
+                                      maxLines: 2,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    TextFieldWidget(
+                                      controller: _linkController,
+                                      label: 'Link',
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -183,6 +219,7 @@ class _LearningPageState extends State<LearningPage> {
       listLearnings = content['posts'];
       _generalController.text = content['introduce'];
       _linkController.text = content['link'];
+      url = content['image_background'];
       setState(() {});
     } catch (e) {
       // ToastUtils.showToast(msg: e.toString(), isError: true);
@@ -196,6 +233,12 @@ class _LearningPageState extends State<LearningPage> {
       CollectionReference userInfo = FirebaseFirestore.instance.collection('user_info');
       await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'learning.introduce': _generalController.text});
       await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'learning.link': _linkController.text});
+      if (bytes.isNotEmpty) {
+        url = await Storage.uploadFile(bytes, 'learnings') ?? '';
+      }
+      if (url != null) {
+        await userInfo.doc('KFcwyediaY33ojA7FdCt').update({'learning.image_background': url});
+      }
       ToastUtils.showToast(msg: 'Update successfully.');
       EasyLoading.dismiss();
     } catch (e) {

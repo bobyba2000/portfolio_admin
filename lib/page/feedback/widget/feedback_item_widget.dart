@@ -93,11 +93,13 @@ class FeedbackItemModel {
   String content;
   String videoLink;
   String title;
+  String subTitle;
   bool isActive;
   FeedbackItemModel(
     this.videoLink,
     this.title,
     this.content,
+    this.subTitle,
     this.isActive,
   );
 
@@ -106,6 +108,7 @@ class FeedbackItemModel {
       'title': title,
       'video': videoLink,
       'content': content,
+      'subTitle': subTitle,
       'isActive': isActive,
     };
   }
